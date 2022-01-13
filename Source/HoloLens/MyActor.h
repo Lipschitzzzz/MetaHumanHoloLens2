@@ -6,8 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "ARTrackable.h"
 #include "Materials/MaterialInterface.h"
+#include "Components/StaticMeshComponent.h"
+#include <vector>
 #include "MyActor.generated.h"
-
 
 UCLASS()
 class HOLOLENS_API AMyActor : public AActor
@@ -22,7 +23,10 @@ public:
 	UARTrackedGeometry *uart;
 
 	UPROPERTY(EditAnywhere)
-	UMaterialInterface* Orange;
+	UMaterialInterface* orange;
+
+	UPROPERTY(EditAnywhere)
+	AActor* whiteKing;
 
 	void OnTrackableUpdated(UARTrackedGeometry* Added);
 
@@ -35,6 +39,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	uint32 meshIndex;
-
+	std::vector< UMRMeshComponent* > mrMeshVector;
+	int nonEmptyMesh = 0;
+	int allMesh = 0;
 };
