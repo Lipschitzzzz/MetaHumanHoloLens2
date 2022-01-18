@@ -16,7 +16,9 @@ public class HoloLens : ModuleRules
 		"InputCore",
 		"EyeTracker",
 		"AugmentedReality",
-		"MRMesh"
+		"MRMesh",
+
+		"PhysX"
 });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

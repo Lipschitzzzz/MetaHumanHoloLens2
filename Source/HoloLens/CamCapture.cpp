@@ -38,7 +38,7 @@ void ACamCapture::BeginPlay()
 
     // Start the webcam.
     bool a = UARBlueprintLibrary::ToggleARCapture(true, EARCaptureType::SpatialMapping);
-    UE_LOG(LogTemp, Warning, TEXT("%d"), a);
+    //UE_LOG(LogTemp, Warning, TEXT("%d"), a);
 
 }
 
@@ -57,7 +57,7 @@ void ACamCapture::Tick(float DeltaTime)
 
     // Get the texture from the camera.
     UARTexture* ARTexture = UARBlueprintLibrary::GetARTexture(EARTextureType::CameraImage);
-    UE_LOG(LogTemp, Warning, TEXT("%d"), ARTexture == nullptr);
+    //UE_LOG(LogTemp, Warning, TEXT("%d"), ARTexture == nullptr);
 
     if (ARTexture != nullptr)
     {
@@ -70,6 +70,8 @@ void ACamCapture::Tick(float DeltaTime)
         // Get the camera instrincs
         FARCameraIntrinsics Intrinsics;
         UARBlueprintLibrary::GetCameraIntrinsics(Intrinsics);
+
+
 
         // Scale the camera mesh by the aspect ratio.
         float R = (float)Intrinsics.ImageResolution.X / (float)Intrinsics.ImageResolution.Y;

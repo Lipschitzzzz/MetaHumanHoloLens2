@@ -2,9 +2,12 @@
 
 
 #include "MyActor.h"
+#include "Components/ActorComponent.h"
 #include "ARTrackable.h"
 #include "ARBlueprintLibrary.h"
 #include "MRMeshComponent.h"
+#include "PhysicsPublic.h"
+#include "PhysXIncludes.h"
 #include <Interface_CollisionDataProviderCore.h>
 
 
@@ -82,7 +85,7 @@ void AMyActor::OnTrackableUpdated(UARTrackedGeometry* Added)
 			// if the MRMesh is not empty
 			if (mrPosition.X != 0.0f && mrPosition.Y != 0.0f && mrPosition.Z != 0.0f)
 			{
-				// MRMesh->SetMaterial(allMesh, orange);
+				MRMesh->SetMaterial(allMesh, orange);
 				nonEmptyMesh += 1;
 				//UE_LOG(LogTemp, Warning, TEXT("Non-Empty Mesh Position x: %f, Non-Empty Mesh Position y: %f, Non-Empty Mesh Position z: %f"),
 					//mrPosition.X, mrPosition.Y, mrPosition.Z);
@@ -130,8 +133,8 @@ void AMyActor::OnTrackableUpdated(UARTrackedGeometry* Added)
 				{
 
 					TArray<FVector>* TFV = MRMesh->TempPosition;
-					TArray<uint32>* TFU = MRMesh->TempIndices;
-
+					/*
+					TArray<uint16>* TFU = MRMesh->TempIndices;
 					//UE_LOG(LogTemp, Warning, TEXT("%d"), b);
 					//UE_LOG(LogTemp, Warning, TEXT("TFV->Num() %d"), TFV->Num());
 					//UE_LOG(LogTemp, Warning, TEXT("TFU->Num() %d"), TFU->Num());
@@ -150,6 +153,7 @@ void AMyActor::OnTrackableUpdated(UARTrackedGeometry* Added)
 						//UE_LOG(LogTemp, Warning, TEXT("TFU->GetData()[i].X %d"), TFU->GetData()[i]);
 
 					}
+					*/
 					b = 1;
 					// UE_LOG(LogTemp, Warning, TEXT("nonempty %d"), nonempty);
 
@@ -177,55 +181,111 @@ void AMyActor::OnTrackableUpdated(UARTrackedGeometry* Added)
 		// it does not work either.
 		// MRMesh->SetEnableMeshOcclusion(true);
 
+		// PxTriangleMesh* TempTriMesh = MRMesh->GetBodySetup()->TriMeshes[0];
 
+		//UE_LOG(LogTemp, Warning, TEXT("bodyinstances: %d"), MRMesh->BodyInstances.Num());
 
-
-
-		/* if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(
-				TEXT("Position x: %f, Position y: %f, Position z: %f"), mrPosition.X, mrPosition.Y, mrPosition.Z));
-		*/
-		
-		
-
-		/*FTriMeshCollisionData* triMCD{};
-		if (meshIndex == 0)
+		if (MRMesh->BodyInstances.Num() != 0)
 		{
-			bool b = MRMesh->GetPhysicsTriMeshData(triMCD, false);
-			UE_LOG(LogTemp, Warning, TEXT("%s"), b);
-		}*/
+			UE_LOG(LogTemp, Warning, TEXT("BodyInstances is non empty"));
+
+			UE_LOG(LogTemp, Warning, TEXT("bodyinstances: %d"), MRMesh->BodyInstance.BodySetup.Get());
+			// UE_LOG(LogTemp, Warning, TEXT("bodyinstances: %s"), MRMesh->BodyInstance.BodySetup.Get()->GetClass());
+			// UE_LOG(LogTemp, Warning, TEXT("bodyinstances: %s"), MRMesh->BodyInstance.BodySetup.Get()->TriMeshes);
+
 			
+			TArray<UStaticMeshComponent*> Components;
+			whiteKing->GetComponents<UStaticMeshComponent>(Components);
+			UE_LOG(LogTemp, Warning, TEXT("whiteKinginstances: %d"), Components[0]->BodyInstance.BodySetup.Get());
+		}
 
-		// Visualize
-		//UE_LOG(LogTemp, Warning, TEXT("meshIndex: %d"), meshIndex);
-		//MRMesh->SetMaterial(meshIndex++, orange);
+		// the issue is here. Get return empty
 		
 
-			//int Num = triMCD->Vertices.Num();
-			//UE_LOG(LogTemp, Warning, TEXT("%s"), Num);
-		
-
-
-		//if (GEngine)
-		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Numbers of MRMesh: %f"), distance));
 
 		/*
-		PxTriangleMesh* TempTriMesh = MRMesh->BodyInstance.BodySetup.Get()->TriMeshes[0];
+		for (int32 i = 0; i < Components.Num(); i++)
+		{
+			UStaticMeshComponent* StaticMeshComponent = Components[i];
+			PxTriangleMesh* TempTriMesh = StaticMeshComponent->BodyInstance.BodySetup.Get()->TriMeshes[0];
 
-		check(TempTriMesh);
+			check(TempTriMesh);
+			int32 TriNumber = TempTriMesh->getNbTriangles();
+
+			const PxVec3* PVertices = TempTriMesh->getVertices();
+			const void* Triangles = TempTriMesh->getTriangles();
+
+			// Grab triangle indices
+			int32 I0, I1, I2;
+
+			for (int32 TriIndex = 0; TriIndex < TriNumber; ++TriIndex)
+			{
+				if (TempTriMesh->getTriangleMeshFlags() && PxTriangleMeshFlag::e16_BIT_INDICES)
+				{
+					PxU16* P16BitIndices = (PxU16*)Triangles;
+					I0 = P16BitIndices[(TriIndex * 3) + 0];
+					I1 = P16BitIndices[(TriIndex * 3) + 1];
+					I2 = P16BitIndices[(TriIndex * 3) + 2];
+				}
+				else
+				{
+					PxU32* P32BitIndices = (PxU32*)Triangles;
+					I0 = P32BitIndices[(TriIndex * 3) + 0];
+					I1 = P32BitIndices[(TriIndex * 3) + 1];
+					I2 = P32BitIndices[(TriIndex * 3) + 2];
+				}
+
+				UE_LOG(LogTemp, Warning, TEXT("I0: %d, I1: %d, I2: %d"), I0, I1, I2);
+
+				
+				float V0 = PVertices->x;
+				UE_LOG(LogTemp, Warning, TEXT("V0: %f"), V0);
+
+			}
+
+			// Local position
+
+
+			UStaticMesh* StaticMesh = StaticMeshComponent->GetStaticMesh();
+		}
+
+
+		//UStaticMeshComponent* s{  };
+		//PxTriangleMesh* TempTriMesh = MRMesh->BodyInstance.BodySetup.Get()->TriMeshes[0];
+		
+		
+		//check(TempTriMesh);
 		int32 TriNumber = TempTriMesh->getNbTriangles();
 
 		const PxVec3* PVertices = TempTriMesh->getVertices();
 		const void* Triangles = TempTriMesh->getTriangles();
-		
-		UE_LOG(LogTemp, Warning, TEXT("Vertice X: %f, Vertice Y: %f, Vertice Z: %f"), PVertices->x, PVertices->y, PVertices->z);
-
-
 
 		// Grab triangle indices
 		int32 I0, I1, I2;
-		FPositionVertexBuffer* VertexBuffer = &MRMesh->StaticMesh->RenderData->LODResources[0].PositionVertexBuffer;
+		
+		for (int32 TriIndex = 0; TriIndex < TriNumber; ++TriIndex)
+		{
+			if (TempTriMesh->getTriangleMeshFlags() && PxTriangleMeshFlag::e16_BIT_INDICES)
+			{
+				PxU16* P16BitIndices = (PxU16*)Triangles;
+				I0 = P16BitIndices[(TriIndex * 3) + 0];
+				I1 = P16BitIndices[(TriIndex * 3) + 1];
+				I2 = P16BitIndices[(TriIndex * 3) + 2];
+			}
+			else
+			{
+				PxU32* P32BitIndices = (PxU32*)Triangles;
+				I0 = P32BitIndices[(TriIndex * 3) + 0];
+				I1 = P32BitIndices[(TriIndex * 3) + 1];
+				I2 = P32BitIndices[(TriIndex * 3) + 2];
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("I0: %d, I1: %d, I2: %d"), I0, I1, I2);
+
+		}
 		*/
+
+
 
 
 	}
