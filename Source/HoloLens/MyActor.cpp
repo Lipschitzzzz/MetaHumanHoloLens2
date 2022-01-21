@@ -85,9 +85,9 @@ void AMyActor::OnTrackableUpdated(UARTrackedGeometry* Added)
 			// if the MRMesh is not empty
 			if (mrPosition.X != 0.0f && mrPosition.Y != 0.0f && mrPosition.Z != 0.0f)
 			{
-				MRMesh->SetMaterial(allMesh, orange);
+				// MRMesh->SetMaterial(allMesh, orange);
 				nonEmptyMesh += 1;
-				//UE_LOG(LogTemp, Warning, TEXT("Non-Empty Mesh Position x: %f, Non-Empty Mesh Position y: %f, Non-Empty Mesh Position z: %f"),
+				// UE_LOG(LogTemp, Warning, TEXT("Non-Empty Mesh Position x: %f, Non-Empty Mesh Position y: %f, Non-Empty Mesh Position z: %f"),
 					//mrPosition.X, mrPosition.Y, mrPosition.Z);
 				mrMeshVector.push_back(MRMesh);
 
@@ -187,16 +187,16 @@ void AMyActor::OnTrackableUpdated(UARTrackedGeometry* Added)
 
 		if (MRMesh->BodyInstances.Num() != 0)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("BodyInstances is non empty"));
+			// UE_LOG(LogTemp, Warning, TEXT("BodyInstances is non empty"));
 
-			UE_LOG(LogTemp, Warning, TEXT("bodyinstances: %d"), MRMesh->BodyInstance.BodySetup.Get());
+			// UE_LOG(LogTemp, Warning, TEXT("bodyinstances: %d"), MRMesh->BodyInstance.BodySetup.Get());
 			// UE_LOG(LogTemp, Warning, TEXT("bodyinstances: %s"), MRMesh->BodyInstance.BodySetup.Get()->GetClass());
 			// UE_LOG(LogTemp, Warning, TEXT("bodyinstances: %s"), MRMesh->BodyInstance.BodySetup.Get()->TriMeshes);
 
 			
 			TArray<UStaticMeshComponent*> Components;
 			whiteKing->GetComponents<UStaticMeshComponent>(Components);
-			UE_LOG(LogTemp, Warning, TEXT("whiteKinginstances: %d"), Components[0]->BodyInstance.BodySetup.Get());
+			// UE_LOG(LogTemp, Warning, TEXT("whiteKinginstances: %d"), Components[0]->BodyInstance.BodySetup.Get());
 		}
 
 		// the issue is here. Get return empty
