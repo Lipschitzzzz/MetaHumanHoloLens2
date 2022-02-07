@@ -1,0 +1,10 @@
+C:\Users\student\Documents\Unreal Projects\HoloLens2ForCV-main\Samples\StreamRecorder\StreamRecorderConverter>python process_all.py --recording_path Newfolder
+Extracting Newfolder\Depth Long Throw.tar
+Extracting Newfolder\PV.tar
+Processing images
+........................................................................................................................................................................
+Saving point clouds
+....................
+Average PV delta: 35.115ms, fps: 28.478
+Average Depth Long Throw delta: 305.269ms, fps: 3.276
+Average hand/head delta: 75.574ms, fps: 13.232
